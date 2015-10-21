@@ -16,14 +16,15 @@
                  android:layout_height="wrap_content"
                  android:layout_alignParentEnd="false"
                  android:layout_below="@+id/map"
-                 android:id="@+id/tableLayout2">
+                 android:id="@+id/tableLayout2"
+                 android:layout_marginTop="50dp">
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:paddingRight="5sp"
-                android:text="@string/started"
+                android:text="@string/state"
                 />
             <TextView android:id="@+id/run_stateTextView"
                       android:layout_width="fill_parent"
@@ -93,7 +94,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/show_info"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"

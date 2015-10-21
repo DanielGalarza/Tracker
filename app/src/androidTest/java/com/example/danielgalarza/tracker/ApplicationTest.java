@@ -1,4 +1,4 @@
-package com.example.danielgalarza.traker;
+package com.example.danielgalarza.tracker;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

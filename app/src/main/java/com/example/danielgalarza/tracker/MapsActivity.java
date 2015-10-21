@@ -1,4 +1,4 @@
-package com.example.danielgalarza.traker;
+package com.example.danielgalarza.tracker;
 
 import android.Manifest;
 import android.content.Intent;
@@ -23,33 +23,30 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private GoogleMap mMap;
 
     private Button mStartButton, mStopButton;
+
     private TextView mStateTextView, mLatitudeTextView,
             mLongitudeTextView, mDistanceTextView, mShowInfo;
+
     private LocationManager locationManager;
     private Criteria criteria;
-    private String provider;
     private Location myLocation;
+    private String provider;
+
     private double longitude;
     private double latitude;
     private double distance;
-    private double initialLat;
-    private double initialLng;
-    double endLat;
-    double endLng;
     private boolean toggle = true;
 
     private final int TIME = 5;
 
-
-    //New
     Location startLoc;
     Location endLoc;
 
 
-
+    /**********************************************************************************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,14 +61,11 @@ public class MapsActivity extends FragmentActivity {
         mStopButton = (Button) findViewById(R.id.run_stopButton);
         mShowInfo = (TextView) findViewById(R.id.show_info);
 
+        /**************************    LOCATION LISTENER    ***************************************/
         final LocationListener listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                //calcDistance(location);
                 calcDist(location);
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                Log.d("LocationListener: ", "Lat: " + location.getLatitude() + "     Lng: " + location.getLongitude());
 
             }
 
@@ -82,7 +76,7 @@ public class MapsActivity extends FragmentActivity {
 
             @Override
             public void onProviderEnabled(String s) {
-                Log.d("provider", "provider enabled");
+                //
             }
 
             @Override
@@ -91,6 +85,7 @@ public class MapsActivity extends FragmentActivity {
             }
         };
 
+        /************************    START BUTTON LISTENER    *************************************/
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +102,7 @@ public class MapsActivity extends FragmentActivity {
 
         });
 
+        /*************************    STOP BUTTON LISTENER    *************************************/
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,22 +112,19 @@ public class MapsActivity extends FragmentActivity {
 
                     mMap.setMyLocationEnabled(true);
                 }
-
+                //removing location updates
                 locationManager.removeUpdates(listener);
+
                 mStateTextView.setText("Stopped");
-                Log.d("stop button", " Pressed!!");
+
                 toggle = true;
             }
 
         });
 
-    }
+    } // End of onCreate()
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
+
 
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -160,16 +153,12 @@ public class MapsActivity extends FragmentActivity {
                 setUpMap();
             }
         }
-    }
+    }// End of setUpMapIfNeeded()
 
 
     /**
-     *
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     *
+     * This method sets up the Google Map.
+     * This should only be called once and when we are sure that mMap is not null.
      */
 
     private void setUpMap() {
@@ -203,9 +192,6 @@ public class MapsActivity extends FragmentActivity {
         // Get last known location
         myLocation = locationManager.getLastKnownLocation(provider);
 
-        //Log.d("location: ", " Loc: " + myLocation);
-
-
         if(myLocation != null) {
 
             // Get the lat and lng of current location
@@ -216,64 +202,30 @@ public class MapsActivity extends FragmentActivity {
             markMyLocation(latitude, longitude);
         }
 
-    }
+    }// End of setUpMap()
 
+    /**
+     * This marks the last know location the chosen the provider on the map.
+     * @param lat Latitude
+     * @param lng Longitude
+     */
     public void markMyLocation(double lat, double lng) {
 
         // Add Marker with title of current location
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title("You are here! (Rough Estimate)"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title("You are here! (Or you were here at some point)"));
         Log.d("Marker:", "adding marker!");
-    }
 
+    }// End of markMyLocation()
 
-    public void calcDistance(Location loc) {
-
-        // START HERE.....  try to get distance between locations
-
-        if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-
-            mMap.setMyLocationEnabled(true);
-        }
-
-        float [] results = new float[1];
-
-        // Dealing with the initial lat and lng because they are  equal to 0 by default
-        if(toggle) {
-
-            initialLat = loc.getLatitude();
-            initialLng = loc.getLongitude();
-            toggle = false;
-        }
-
-
-        endLat = loc.getLatitude();
-        endLng = loc.getLongitude();
-
-        //test
-        results[0] = 1;
-
-        // Calculating distance: when we start tracking, at every second.
-        loc.distanceBetween(initialLat, initialLng, endLat, endLng, results);
-
-        distance = results[0];
-        //float prevlat = results[0];
-        //float prevlng = results[1];
-
-        initialLat = endLat;
-        initialLng = endLng;
-
-        Log.d("LocationListener: ", "Lat: " + loc.getLatitude() + "     Lng: " + loc.getLongitude());
-        Log.d("Distance", " distance result: " + distance);
-        //Log.d("Location Prev: ", "Prev Lat: " + prevlat + "     Prev Lng: " + prevlng);
-
-        //return results;
-
-    }
-
+    /**
+     * This method calculates the distance between two location objects.
+     * @param loc the location passed in by the location listener
+     */
     public void calcDist(Location loc) {
 
-        Log.d("calc dist" , "calc distance");
+        //debugging
+        Log.d("calc dist" , "calculating distance");
+
         // Dealing with the initial lat and lng because they are  equal to 0 by default
         if(toggle) {
 
@@ -287,29 +239,39 @@ public class MapsActivity extends FragmentActivity {
 
         // Calculating distance: when we start tracking, at every second.
         distance += startLoc.distanceTo(endLoc);
-
         startLoc = endLoc;
 
+        //debugging
         Log.d("LocationListener: ", "Lat: " + startLoc.getLatitude() + "     Lng: " + startLoc.getLongitude());
         Log.d("Distance", " distance result: " + distance);
 
         //Sending info to UI
-        String lat = new Double(startLoc.getLatitude()).toString();
-        String lng = new Double(startLoc.getLongitude()).toString();
-        String dist = new Double(distance).toString();
-
-        mLatitudeTextView.setText(lat);
-        mLongitudeTextView.setText(lng);
-        mDistanceTextView.setText(dist + " meters");
         mStateTextView.setText("Started");
+        mLatitudeTextView.setText(new Double(startLoc.getLatitude()).toString());
+        mLongitudeTextView.setText(new Double(startLoc.getLongitude()).toString());
+        mDistanceTextView.setText(new Double(distance).toString() + " meters");
 
-    }
+    }// End of calcDist()
 
+    /**
+     *  saves the distance just in case orientation changes or screen is locked.
+     */
     @Override
     protected void onPause() {
         super.onPause();
+
+        // Displays distance in TextView
         mShowInfo.setText(new Double(distance).toString());
 
+    }
+
+    /**
+     * Sets up the map again.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
     }
 
 
