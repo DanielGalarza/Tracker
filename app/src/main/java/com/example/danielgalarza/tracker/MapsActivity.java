@@ -23,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap;
@@ -46,7 +47,7 @@ public class MapsActivity extends FragmentActivity {
     private double newDistance;
     private boolean toggle = true;
 
-    private int time = 5;
+    private int time = 1;
 
     Location startLoc;
     Location endLoc;
@@ -98,17 +99,8 @@ public class MapsActivity extends FragmentActivity {
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-
-                    mMap.setMyLocationEnabled(true);
-                }
-
-                locationManager.requestLocationUpdates(provider, time, 0, listener);
-                Log.d("start button", " Pressed!!");
+                reqLocUpdates(provider, time, 0, listener);
             }
-
         });
 
         /*************************    STOP BUTTON LISTENER    *************************************/
@@ -141,19 +133,35 @@ public class MapsActivity extends FragmentActivity {
                 mShowInfo.setText(" ");
             }
         });
-        /*************************    MILLISECOND PICKER LISTENER    *************************************/
+        /*************************    MILLISECOND PICKER LISTENER    *******************************/
         millisecondPicker.setMaxValue(9999);
-        millisecondPicker.setMinValue(0);
+        millisecondPicker.setMinValue(1);
         millisecondPicker.setWrapSelectorWheel(true);
         millisecondPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 time = newVal;
-                // TODO: MAKE time INTERVAL VALUE CHANGE ON CLICK
+                reqLocUpdates(provider, time, 0, listener);
             }
         });
 
     } // End of onCreate()
+
+    /**
+     * Used to change parameters (specifically the length of time between) LocationUpdates
+     * @param provider
+     * @param time
+     * @param minDistance
+     * @param listener
+     */
+    private void reqLocUpdates(String provider, int time, int minDistance, LocationListener listener) {
+        if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            mMap.setMyLocationEnabled(true);
+        }
+        locationManager.requestLocationUpdates(provider, time, 0, listener);
+    }
 
 
 
