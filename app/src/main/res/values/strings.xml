@@ -7,4 +7,6 @@
     <string name="distance">Distance:</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="clear">Clear</string>
+    <string name="frequency">Frequency at which location \nis recorded (in milliseconds) </string>
 </resources>

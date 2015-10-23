@@ -1,3 +1,4 @@
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,6 +32,7 @@
             <TextView android:id="@+id/run_stateTextView"
                       android:layout_width="fill_parent"
                       android:layout_height="wrap_content"
+                      android:paddingBottom="4dp"
                 />
         </TableRow>
         <TableRow>
@@ -73,6 +75,7 @@
                       android:layout_height="wrap_content"
                       android:textSize="25sp"
                 />
+
         </TableRow>
         <LinearLayout
             android:orientation="horizontal"
@@ -82,25 +85,68 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:padding="2dp"
                     android:text="@string/start"
                 />
             <Button android:id="@+id/run_stopButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:padding="2dp"
                     android:text="@string/stop"
+                />
+            <Button android:id="@+id/run_clearButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="2dp"
+                    android:text="@string/clear"
                 />
         </LinearLayout>
     </TableLayout>
-
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/show_info"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/tableLayout"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/show_info"
+            android:scrollbars = "vertical"
+
+          />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/show_info"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:paddingRight="50dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/frequency"
+                android:id="@+id/frequency"
+                android:layout_centerVertical="true"
+                android:paddingRight="65dp"/>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/editTime"
+                android:layout_alignRight="@+id/frequency"
+                />
+        </RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
 

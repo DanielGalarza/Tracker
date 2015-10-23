@@ -11,9 +11,11 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +27,9 @@ public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap;
 
-    private Button mStartButton, mStopButton;
+    private Button mStartButton, mStopButton, mClearButton;
+
+    private NumberPicker millisecondPicker;
 
     private TextView mStateTextView, mLatitudeTextView,
             mLongitudeTextView, mDistanceTextView, mShowInfo;
@@ -38,9 +42,11 @@ public class MapsActivity extends FragmentActivity {
     private double longitude;
     private double latitude;
     private double distance;
+    private double oldDistance;
+    private double newDistance;
     private boolean toggle = true;
 
-    private final int TIME = 5;
+    private int time = 5;
 
     Location startLoc;
     Location endLoc;
@@ -59,7 +65,10 @@ public class MapsActivity extends FragmentActivity {
         mDistanceTextView = (TextView) findViewById(R.id.run_distanceTextView);
         mStartButton = (Button) findViewById(R.id.run_startButton);
         mStopButton = (Button) findViewById(R.id.run_stopButton);
+        mClearButton = (Button) findViewById(R.id.run_clearButton);
         mShowInfo = (TextView) findViewById(R.id.show_info);
+        mShowInfo.setMovementMethod(new ScrollingMovementMethod());
+        millisecondPicker = (NumberPicker) findViewById(R.id.editTime);
 
         /**************************    LOCATION LISTENER    ***************************************/
         final LocationListener listener = new LocationListener() {
@@ -96,7 +105,7 @@ public class MapsActivity extends FragmentActivity {
                     mMap.setMyLocationEnabled(true);
                 }
 
-                locationManager.requestLocationUpdates(provider, TIME, 0, listener);
+                locationManager.requestLocationUpdates(provider, time, 0, listener);
                 Log.d("start button", " Pressed!!");
             }
 
@@ -120,6 +129,28 @@ public class MapsActivity extends FragmentActivity {
                 toggle = true;
             }
 
+        });
+        /*************************    CLEAR BUTTON LISTENER    *************************************/
+        mClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                distance = 0;
+                mLatitudeTextView.setText(" ");
+                mLongitudeTextView.setText(" ");
+                mDistanceTextView.setText("0" + " meters");
+                mShowInfo.setText(" ");
+            }
+        });
+        /*************************    MILLISECOND PICKER LISTENER    *************************************/
+        millisecondPicker.setMaxValue(9999);
+        millisecondPicker.setMinValue(0);
+        millisecondPicker.setWrapSelectorWheel(true);
+        millisecondPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                time = newVal;
+                // TODO: MAKE time INTERVAL VALUE CHANGE ON CLICK
+            }
         });
 
     } // End of onCreate()
@@ -247,11 +278,18 @@ public class MapsActivity extends FragmentActivity {
 
         //Sending info to UI
         mStateTextView.setText("Started");
-        mLatitudeTextView.setText(new Double(startLoc.getLatitude()).toString());
-        mLongitudeTextView.setText(new Double(startLoc.getLongitude()).toString());
-        mDistanceTextView.setText(new Double(distance).toString() + " meters");
+        mLatitudeTextView.setText(String.format("%.4f", new Double(startLoc.getLatitude())));
+        mLongitudeTextView.setText(String.format("%.4f", new Double(startLoc.getLongitude())));
+        mDistanceTextView.setText(String.format("%.2f",new Double(distance)) + " meters");
+
+        //new lng and lat values are prepended to front of TextView mShowInfo
+        mShowInfo.setText("\nCurrent Longitude: " + String.format("%.4f", new Double(startLoc.getLongitude())) +
+                "\nCurrent Latitude: " + String.format("%.2f", new Double(startLoc.getLatitude())) +
+                "\nDistance Traveled: " + String.format("%.2f", new Double(distance)) + " meters\n" +
+                mShowInfo.getText());
 
     }// End of calcDist()
+
 
     /**
      *  saves the distance just in case orientation changes or screen is locked.
@@ -261,7 +299,7 @@ public class MapsActivity extends FragmentActivity {
         super.onPause();
 
         // Displays distance in TextView
-        mShowInfo.setText(new Double(distance).toString());
+        //mShowInfo.setText(new Double(distance).toString());
 
     }
 
